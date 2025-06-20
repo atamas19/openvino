@@ -106,7 +106,7 @@ static void cfgInputPreproc(ov::preprocess::PrePostProcessor& ppp, const std::sh
 
 static void cfgOutputPostproc(ov::preprocess::PrePostProcessor& ppp, const std::shared_ptr<ov::Model>& model,
                               const AttrMap<int>& output_precision, const AttrMap<std::string>& output_layout,
-                              const AttrMap<std::string> output_model_layout) {
+                              const AttrMap<std::string> output_model_layout, bool clamp_u8_outputs = false) {
     for (const auto& output : model->outputs()) {
         const auto& name = output.get_any_name();
         auto& oi = ppp.output(name);
@@ -114,6 +114,10 @@ static void cfgOutputPostproc(ov::preprocess::PrePostProcessor& ppp, const std::
         const auto op = lookUp(output_precision, name);
         if (op.has_value()) {
             oi.tensor().set_element_type(toElementType(*op));
+            if (clamp_u8_outputs) {
+                std::cout << "Clamping applied\n";
+                oi.postprocess().clamp(0.0, 256.0);
+            }
         }
 
         const auto ol = lookUp(output_layout, name);
@@ -177,7 +181,7 @@ InOutLayers OpenVINOLayersReader::Impl::readFromModel(const std::string& model_p
         const auto op_map = unpackLayerAttr(params.output_precision, output_names, "output precision");
         const auto ol_map = unpackLayerAttr(params.output_layout, output_names, "output layout");
         const auto oml_map = unpackLayerAttr(params.output_model_layout, output_names, "output model layout");
-        cfgOutputPostproc(ppp, model, op_map, ol_map, oml_map);
+        cfgOutputPostproc(ppp, model, op_map, ol_map, oml_map, params.clamp_u8_outputs);
 
         model = ppp.build();
     }
