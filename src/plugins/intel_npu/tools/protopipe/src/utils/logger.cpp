@@ -1,3 +1,4 @@
+//
 // Copyright (C) 2018-2026 Intel Corporation
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -18,9 +19,6 @@ std::stringstream& Logger::stream() {
 Logger::~Logger() {
     if (m_lvl <= Logger::global_lvl) {
         switch (m_lvl) {
-        case LogLevel::Warn:
-            std::cout << "[ WARN ] " << m_ss.str();
-            break;
         case LogLevel::Info:
             std::cout << "[ INFO ] " << m_ss.str();
             break;

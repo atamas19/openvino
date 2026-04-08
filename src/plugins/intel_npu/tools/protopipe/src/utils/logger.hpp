@@ -1,3 +1,4 @@
+//
 // Copyright (C) 2018-2026 Intel Corporation
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -8,9 +9,8 @@
 
 enum class LogLevel {
     None = 0,
-    Warn = 1,
-    Info = 2,
-    Debug = 3,
+    Info = 1,
+    Debug = 2,
 };
 
 class Logger {
@@ -25,6 +25,5 @@ private:
     std::stringstream m_ss;
 };
 
-#define LOG_WARN() Logger{LogLevel::Warn}.stream()
 #define LOG_INFO() Logger{LogLevel::Info}.stream()
 #define LOG_DEBUG() Logger{LogLevel::Debug}.stream()
